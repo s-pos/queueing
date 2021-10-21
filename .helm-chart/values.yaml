@@ -1,0 +1,111 @@
+# Default values for backend service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+
+image:
+  pullPolicy: Always
+imagePullSecrets: docker-io-credentials
+
+nameOverride: ""
+fullnameOverride: ""
+configmap: spos-dev
+
+service:
+  # type: ClusterIP
+  port: 6060
+  dstPort: 6060
+
+ingress:
+  enabled: false
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-embrio
+    kubernetes.io/ingress.class: embrio-dev
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      location ~* ^/(metrics|health|liveness|debug|live) {
+      error_page 404 /404.html;
+      }
+  tlssecret: be-dev-tls
+
+resources:
+  limits:
+    cpu: 256m
+    memory: 200Mi
+  requests:
+    cpu: 128m
+    memory: 128Mi
+
+autoscaller:
+  enabled: true
+  replicas:
+    min: 1
+    max: 4
+  utilization:
+    cpu: 85
+    memory: 85
+
+# livenessProbe:
+#   failureThreshold: 5
+#   httpGet:
+#     path: /live/status
+#     port: 8080
+#     scheme: HTTP
+#   initialDelaySeconds: 5
+#   periodSeconds: 5
+#   successThreshold: 1
+#   timeoutSeconds: 10
+
+# readinessProbe:
+#   failureThreshold: 5
+#   httpGet:
+#     path: /live/status
+#     port: 8080
+#     scheme: HTTP
+#   initialDelaySeconds: 5
+#   periodSeconds: 5
+#   successThreshold: 1
+#   timeoutSeconds: 10
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+    # name: axisnet-sa
+    # namespace: axisnet
+    # secrets:
+    # - name: axisnet-secret
+
+# podSecurityContext: {}
+  # fsGroup: 2000
+
+# securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+    # kubernetes.io/tls-acme: "true"
+  # hosts:
+  #   - host: chart-example.local
+  #     paths: []
+  # tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+nodeSelector: {}
+
+# tolerations: []
+
+# affinity: {}
