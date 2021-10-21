@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 )
 
@@ -15,6 +16,7 @@ const (
 )
 
 type producer struct {
+	log          *logrus.Logger
 	channel      *amqp.Channel
 	exchange     string
 	exchangeType string
@@ -26,7 +28,7 @@ type Producer interface {
 	PublishMessage(routingKey Routing, data interface{}) error
 }
 
-func New() Producer {
+func New(log *logrus.Logger) Producer {
 	amqpURI := fmt.Sprintf(
 		"amqp://%s:%s@%s:%s%s",
 		os.Getenv("RABBIT_USERNAME"),
@@ -47,6 +49,7 @@ func New() Producer {
 	}
 
 	return &producer{
+		log:          log,
 		channel:      ch,
 		exchange:     os.Getenv("RABBIT_EXCHANGE"),
 		exchangeType: "topic",

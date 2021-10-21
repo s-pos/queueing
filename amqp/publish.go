@@ -9,6 +9,7 @@ import (
 func (p *producer) PublishMessage(routingKey Routing, data interface{}) error {
 	body, err := json.Marshal(data)
 	if err != nil {
+		p.log.Error(err)
 		return err
 	}
 
