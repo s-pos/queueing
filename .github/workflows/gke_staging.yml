@@ -50,4 +50,4 @@ jobs:
       ## deployment k8s
       - name: Deploy to k8s
         run: |
-          helm upgrade ${{ env.SERVICE_NAME }} --install ./.helm-chart -n ${{ env.NAMESPACE }}
+          helm upgrade ${{ env.SERVICE_NAME }} --install ./.helm-chart -n ${{ env.NAMESPACE }} --set image.repository=${{ env.DOCKER_URL }} --set image.tag=testing && kubectl rollout restart deploy/${{ env.SERVICE_NAME }} -n ${{ env.NAMESPACE }}
