@@ -28,6 +28,7 @@ func (a *authGrpc) SendEmailVerification(ctx context.Context, req *pb.Verificati
 		err error
 	)
 
+	a.log.Infof("request %v", req)
 	err = a.publish.PublishMessage(amqp.RegisterVerification, req)
 	if err != nil {
 		a.log.Errorf("error publish message %v", err)
